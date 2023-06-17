@@ -45,19 +45,4 @@ public class Member {
         this.createdAt = LocalDateTime.now();
     }
 
-    public void changeArticle(Article article) {
-        this.articles.add(article);
-    }
-
-    public void deleteArticle(Article article) {
-        this.articles.remove(article);
-    }
-
-    public void changeComment(Comment comment) {
-        this.comments.add(comment);
-    }
-
-    public void deleteComment(Comment comment) {
-        this.comments.remove(comment);
-    }
 }
