@@ -1,5 +1,6 @@
 package henesys.henesysbackend.article.repository;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import henesys.henesysbackend.article.domain.entity.Article;
 import henesys.henesysbackend.member.domain.entity.Member;
 import henesys.henesysbackend.member.domain.enumtype.RoleType;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 @Transactional
 @Slf4j
 public class ArticleRepositoryTest {
+
 
     @Autowired
     ArticleRepository articleRepository;
@@ -73,7 +75,6 @@ public class ArticleRepositoryTest {
         //given
         articleRepository.save(articleA);
         Long findId = articleA.getId();
-
         //when
         Article findArticle = articleRepository.findById(findId).get();
 
