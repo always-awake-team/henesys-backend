@@ -38,16 +38,20 @@ public class Article {
     @OneToMany(mappedBy = "article")
     private List<Comment> comments = new ArrayList<>();
 
-    public Article(Member member, String title, String content) {
-        this.member = member;
-        this.title = title;
-        this.content = content;
-    }
-
     public Article(Member member, String title, String content, String titleImg) {
         this.member = member;
         this.title = title;
         this.content = content;
         this.titleImg = titleImg;
+        this.createdAt = LocalDateTime.now();
+        this.modifiedAt = this.createdAt;
+    }
+
+    public void addArticleToMember() {
+        this.member.getArticles().add(this);
+    }
+
+    public void deleteArticleToMember() {
+        this.member.getArticles().remove(this);
     }
 }
