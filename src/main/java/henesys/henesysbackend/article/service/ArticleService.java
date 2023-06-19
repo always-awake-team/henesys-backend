@@ -24,9 +24,18 @@ public class ArticleService {
         return savedArticle.getId();
     }
 
-    public List<ArticleDto> createArticleDtos() {
+    public List<ArticleDto.ResponseAllArticleList> createArticleDtos() {
         return articleRepository.findAll().stream()
-                .map(article -> new ArticleDto(article.getTitle(), article.getTitleImg(), article.getMember().getName(), article.getContent(), article.getCommentCount(), article.getViewCount(), article.getLikeCount(), article.getModifiedAt()))
-                .collect(Collectors.toList());
+                .map(article -> ArticleDto.ResponseAllArticleList.builder()
+                        .title(article.getTitle())
+                        .thumbnailImg(article.getTitleImg())
+                        .author(article.getMember().getName())
+                        .content(article.getContent())
+                        .commentCount(article.getCommentCount())
+                        .viewCount(article.getViewCount())
+                        .likeCount(article.getLikeCount())
+                        .modifiedAt(article.getModifiedAt())
+                        .build())
+                .toList();
     }
 }
