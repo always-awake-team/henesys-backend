@@ -25,32 +25,32 @@ public class ArticleService {
 
     public List<ArticleDto.ResponseArticleDto> createArticleDtos() {
         return articleRepository.findAll().stream()
-                .map(article -> ArticleDto.ResponseArticleDto.builder()
-                        .title(article.getTitle())
-                        .thumbnailImg(article.getTitleImg())
-                        .author(article.getMember().getName())
-                        .content(article.getContent())
-                        .commentCount(article.getCommentCount())
-                        .viewCount(article.getViewCount())
-                        .likeCount(article.getLikeCount())
-                        .modifiedAt(article.getModifiedAt())
-                        .build())
+                .map(ArticleService::createArticleDto)
                 .toList();
     }
 
     public List<ArticleDto.ResponseArticleDto> createTop3ByCreatedAtDescDtos() {
         return articleRepository.findTop3ByOrderByCreatedAtDesc().stream()
-                .map(article -> ArticleDto.ResponseArticleDto.builder()
-                        .title(article.getTitle())
-                        .thumbnailImg(article.getTitleImg())
-                        .author(article.getMember().getName())
-                        .content(article.getContent())
-                        .commentCount(article.getCommentCount())
-                        .viewCount(article.getViewCount())
-                        .likeCount(article.getLikeCount())
-                        .modifiedAt(article.getModifiedAt())
-                        .build())
+                .map(ArticleService::createArticleDto)
                 .toList();
     }
 
+    public List<ArticleDto.ResponseArticleDto> createTop4ByMostViewDescDtos() {
+        return articleRepository.findTop4ByOrderByViewCountDescCreatedAtDesc().stream()
+                .map(ArticleService::createArticleDto)
+                .toList();
+    }
+
+    private static ArticleDto.ResponseArticleDto createArticleDto(Article article) {
+        return ArticleDto.ResponseArticleDto.builder()
+                .title(article.getTitle())
+                .thumbnailImg(article.getTitleImg())
+                .author(article.getMember().getName())
+                .content(article.getContent())
+                .commentCount(article.getCommentCount())
+                .viewCount(article.getViewCount())
+                .likeCount(article.getLikeCount())
+                .modifiedAt(article.getModifiedAt())
+                .build();
+    }
 }
