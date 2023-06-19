@@ -1,17 +1,18 @@
 package henesys.henesysbackend.article.repository;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import henesys.henesysbackend.article.domain.entity.Article;
 import henesys.henesysbackend.member.domain.entity.Member;
 import henesys.henesysbackend.member.domain.enumtype.RoleType;
 import henesys.henesysbackend.member.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -100,6 +101,28 @@ public class ArticleRepositoryTest {
         assertThat(findArticles.size()).isEqualTo(2);
 
         assertThat(notExistsArticles).isEmpty();
+    }
+
+    @Test
+    @DisplayName("최근 등록 게시물 3개 표시")
+    public void findTop3ByOrderByCreatedAtDescTest() throws Exception {
+        //given
+        articleRepository.save(articleA);
+        articleRepository.save(articleB);
+        Article firstSaveArticle = articleRepository.save(articleC);
+        Article middleSaveArticle = articleRepository.save(new Article(memberA, "titleD", "contentD", "titleImgD"));
+        Article lastSaveArticle = articleRepository.save(new Article(memberA, "titleE", "contentE", "titleImgE"));
+
+        //when
+        List<Article> findArticles = articleRepository.findTop3ByOrderByCreatedAtDesc();
+
+        //then
+        assertThat(findArticles.size()).isEqualTo(3);
+        assertThat(findArticles.get(0)).isEqualTo(lastSaveArticle);
+        assertThat(findArticles.get(1)).isEqualTo(middleSaveArticle);
+        assertThat(findArticles.get(2)).isEqualTo(firstSaveArticle);
+        assertThat(findArticles.get(0).getCreatedAt()).isAfter(findArticles.get(1).getCreatedAt());
+        assertThat(findArticles.get(1).getCreatedAt()).isAfter(findArticles.get(2).getCreatedAt());
     }
 
 }

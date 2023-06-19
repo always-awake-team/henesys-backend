@@ -69,7 +69,7 @@ public class ArticleServiceTest {
         articleService.addArticle(articleC);
 
         //when
-        List<ArticleDto.ResponseAllArticleList> findDtos = articleService.createArticleDtos();
+        List<ArticleDto.ResponseArticleDto> findDtos = articleService.createArticleDtos();
 
         //then
         assertThat(findDtos.size()).isEqualTo(3);
@@ -80,6 +80,24 @@ public class ArticleServiceTest {
         assertThat(findDtos.get(0).getThumbnailImg()).isEqualTo(articleA.getTitleImg());
         assertThat(findDtos.get(0).getLikeCount()).isEqualTo(articleA.getLikeCount());
         assertThat(findDtos.get(0).getViewCount()).isEqualTo(articleA.getViewCount());
+    }
+
+    @Test
+    public void createTop3ByCreatedAtDescDtosTest() throws Exception {
+        //given
+        articleService.addArticle(articleA);
+        articleService.addArticle(articleB);
+        articleService.addArticle(articleC);
+        articleService.addArticle(new Article(memberB, "articleD title", "articleD content", "titleImgUrlD"));
+        articleService.addArticle(new Article(memberA, "articleE title", "articleE content", "titleImgUrlE"));
+
+        //when
+        List<ArticleDto.ResponseArticleDto> findDtos = articleService.createTop3ByCreatedAtDescDtos();
+
+        //then
+        assertThat(findDtos.size()).isEqualTo(3);
+        assertThat(findDtos.get(0).getModifiedAt()).isAfter(findDtos.get(1).getModifiedAt());
+        assertThat(findDtos.get(1).getModifiedAt()).isAfter(findDtos.get(2).getModifiedAt());
     }
 //
 //    @Test
