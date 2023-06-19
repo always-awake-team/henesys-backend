@@ -15,8 +15,14 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @GetMapping("/articles")
-    public ResponseResult<List<ArticleDto.ResponseAllArticleList>> getArticles() {
-        List<ArticleDto.ResponseAllArticleList> articleDtos = articleService.createArticleDtos();
+    public ResponseResult<List<ArticleDto.ResponseArticleDto>> getArticles() {
+        List<ArticleDto.ResponseArticleDto> articleDtos = articleService.createArticleDtos();
+        return new ResponseResult<>(articleDtos);
+    }
+
+    @GetMapping("/articles/new")
+    public ResponseResult<List<ArticleDto.ResponseArticleDto>> getTop3NewCreatedArticles() {
+        List<ArticleDto.ResponseArticleDto> articleDtos = articleService.createTop3ByCreatedAtDescDtos();
         return new ResponseResult<>(articleDtos);
     }
 

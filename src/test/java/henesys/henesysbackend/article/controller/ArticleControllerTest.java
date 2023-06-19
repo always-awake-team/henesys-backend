@@ -5,6 +5,7 @@ import henesys.henesysbackend.article.domain.entity.Article;
 import henesys.henesysbackend.article.service.ArticleService;
 import henesys.henesysbackend.member.domain.entity.Member;
 import henesys.henesysbackend.member.domain.enumtype.RoleType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -29,23 +30,33 @@ class ArticleControllerTest {
     @MockBean
     private ArticleService articleService;
 
+    private Member memberA;
+    private Member memberB;
+    private Article articleA;
+    private Article articleB;
+    private Article articleC;
+
+    private List<Article> articleList = new ArrayList<>();
+
+    @BeforeEach
+    public void before() {
+        memberA = new Member("memberA", "passwordA", RoleType.USER, "nicknameA", "emailA");
+        memberB = new Member("memberB", "passwordB", RoleType.USER, "nicknameB", "emailB");
+
+        articleA = new Article(memberA, "articleA title", "articleA content", "titleImgUrlA");
+        articleB = new Article(memberB, "articleB title", "articleB content", "titleImgUrlB");
+        articleC = new Article(memberA, "articleC title", "articleC content", "titleImgUrlC");
+
+        articleList.add(articleA);
+        articleList.add(articleB);
+        articleList.add(articleC);
+    }
+
     @Test
     public void getArticleDtos() throws Exception {
         //given
-        Member memberA = new Member("memberA", "passwordA", RoleType.USER, "nicknameA", "emailA");
-        Member memberB = new Member("memberB", "passwordB", RoleType.USER, "nicknameB", "emailB");
-
-        Article articleA = new Article(memberA, "articleA title", "articleA content", "titleImgUrlA");
-        Article articleB = new Article(memberB, "articleB title", "articleB content", "titleImgUrlB");
-        Article articleC = new Article(memberA, "articleC title", "articleC content", "titleImgUrlC");
-
-        List<Article> articles = new ArrayList<>();
-        articles.add(articleA);
-        articles.add(articleB);
-        articles.add(articleC);
-
-        List<ArticleDto.ResponseAllArticleList> articleDtos = articles.stream()
-                .map(article -> ArticleDto.ResponseAllArticleList.builder()
+        List<ArticleDto.ResponseArticleDto> articleDtos = articleList.stream()
+                .map(article -> ArticleDto.ResponseArticleDto.builder()
                         .title(article.getTitle())
                         .thumbnailImg(article.getTitleImg())
                         .author(article.getMember().getName())
@@ -69,6 +80,47 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.data[0].thumbnailImg").exists())
                 .andExpect(jsonPath("$.data[0].author").exists())
                 .andExpect(jsonPath("$.data[0].author").value("memberA"))
+                .andExpect(jsonPath("$.data[0].content").exists())
+                .andExpect(jsonPath("$.data[0].commentCount").exists())
+                .andExpect(jsonPath("$.data[0].viewCount").exists())
+                .andExpect(jsonPath("$.data[0].likeCount").exists())
+                .andExpect(jsonPath("$.data[0].modifiedAt").exists());
+    }
+
+    @Test
+    public void getNewTop3ArticleDtos() throws Exception {
+        //given
+        List<Article> top3List = new ArrayList<>();
+
+        top3List.add(new Article(memberB, "articleE title", "articleE content", "titleImgUrlE"));
+        top3List.add(new Article(memberA, "articleD title", "articleD content", "titleImgUrlD"));
+        top3List.add(articleC);
+
+        List<ArticleDto.ResponseArticleDto> articleDtos = top3List.stream()
+                .map(article -> ArticleDto.ResponseArticleDto.builder()
+                        .title(article.getTitle())
+                        .thumbnailImg(article.getTitleImg())
+                        .author(article.getMember().getName())
+                        .content(article.getContent())
+                        .commentCount(article.getCommentCount())
+                        .viewCount(article.getViewCount())
+                        .likeCount(article.getLikeCount())
+                        .modifiedAt(article.getModifiedAt())
+                        .build())
+                .toList();
+
+        //when
+        when(articleService.createTop3ByCreatedAtDescDtos()).thenReturn(articleDtos);
+
+        //then
+        mockMvc.perform(get("/articles/new"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data", hasSize(3)))
+                .andExpect(jsonPath("$.data[0].title").exists())
+                .andExpect(jsonPath("$.data[0].thumbnailImg").exists())
+                .andExpect(jsonPath("$.data[0].author").exists())
+                .andExpect(jsonPath("$.data[0].author").value("memberB"))
                 .andExpect(jsonPath("$.data[0].content").exists())
                 .andExpect(jsonPath("$.data[0].commentCount").exists())
                 .andExpect(jsonPath("$.data[0].viewCount").exists())

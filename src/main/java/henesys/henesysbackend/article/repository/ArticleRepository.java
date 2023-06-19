@@ -10,4 +10,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     List<Article> findAllByMember(Member member);
 
+    List<Article> findTop3ByOrderByCreatedAtDesc();
+
 }

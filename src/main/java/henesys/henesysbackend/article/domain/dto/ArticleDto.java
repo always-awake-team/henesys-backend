@@ -10,7 +10,7 @@ public class ArticleDto {
     @Builder
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     @AllArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class ResponseAllArticleList {
+    public static class ResponseArticleDto {
 
         private String title;
         private String thumbnailImg;

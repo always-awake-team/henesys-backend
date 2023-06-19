@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,9 +23,9 @@ public class ArticleService {
         return savedArticle.getId();
     }
 
-    public List<ArticleDto.ResponseAllArticleList> createArticleDtos() {
+    public List<ArticleDto.ResponseArticleDto> createArticleDtos() {
         return articleRepository.findAll().stream()
-                .map(article -> ArticleDto.ResponseAllArticleList.builder()
+                .map(article -> ArticleDto.ResponseArticleDto.builder()
                         .title(article.getTitle())
                         .thumbnailImg(article.getTitleImg())
                         .author(article.getMember().getName())
@@ -38,4 +37,20 @@ public class ArticleService {
                         .build())
                 .toList();
     }
+
+    public List<ArticleDto.ResponseArticleDto> createTop3ByCreatedAtDescDtos() {
+        return articleRepository.findTop3ByOrderByCreatedAtDesc().stream()
+                .map(article -> ArticleDto.ResponseArticleDto.builder()
+                        .title(article.getTitle())
+                        .thumbnailImg(article.getTitleImg())
+                        .author(article.getMember().getName())
+                        .content(article.getContent())
+                        .commentCount(article.getCommentCount())
+                        .viewCount(article.getViewCount())
+                        .likeCount(article.getLikeCount())
+                        .modifiedAt(article.getModifiedAt())
+                        .build())
+                .toList();
+    }
+
 }
