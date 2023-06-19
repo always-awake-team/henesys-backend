@@ -69,7 +69,7 @@ public class ArticleServiceTest {
         articleService.addArticle(articleC);
 
         //when
-        List<ArticleDto> findDtos = articleService.createArticleDtos();
+        List<ArticleDto.ResponseAllArticleList> findDtos = articleService.createArticleDtos();
 
         //then
         assertThat(findDtos.size()).isEqualTo(3);
