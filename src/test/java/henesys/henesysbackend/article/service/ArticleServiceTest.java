@@ -73,6 +73,7 @@ public class ArticleServiceTest {
 
         //then
         assertThat(findDtos.size()).isEqualTo(3);
+        assertThat(findDtos.get(0).getId()).isEqualTo(articleA.getId());
         assertThat(findDtos.get(0).getTitle()).isEqualTo(articleA.getTitle());
         assertThat(findDtos.get(0).getContent()).isEqualTo(articleA.getContent());
         assertThat(findDtos.get(0).getAuthor()).isEqualTo(articleA.getMember().getName());

@@ -12,6 +12,7 @@ public class ArticleDto {
     @AllArgsConstructor(access = AccessLevel.PROTECTED)
     public static class ResponseArticleDto {
 
+        private Long id;
         private String title;
         private String thumbnailImg;
         private String author;
