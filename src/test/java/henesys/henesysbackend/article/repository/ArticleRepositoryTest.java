@@ -125,4 +125,23 @@ public class ArticleRepositoryTest {
         assertThat(findArticles.get(1).getCreatedAt()).isAfter(findArticles.get(2).getCreatedAt());
     }
 
+    @Test
+    public void findTop4ByOrderByViewCountDescCreatedAtDescTest() throws Exception {
+        //given
+        articleRepository.save(articleA);
+        Article fourthSaveArticle = articleRepository.save(articleB);
+        Article thirdSaveArticle = articleRepository.save(articleC);
+        Article secondSaveArticle = articleRepository.save(new Article(memberA, "titleD", "contentD", "titleImgD"));
+        Article firstSaveArticle = articleRepository.save(new Article(memberA, "titleE", "contentE", "titleImgE"));
+
+        //when
+        List<Article> findArticles = articleRepository.findTop4ByOrderByViewCountDescCreatedAtDesc();
+
+        //then
+        assertThat(findArticles.size()).isEqualTo(4);
+        assertThat(findArticles.get(0)).isEqualTo(firstSaveArticle);
+        assertThat(findArticles.get(1)).isEqualTo(secondSaveArticle);
+        assertThat(findArticles.get(2)).isEqualTo(thirdSaveArticle);
+        assertThat(findArticles.get(3)).isEqualTo(fourthSaveArticle);
+    }
 }

@@ -128,4 +128,49 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.data[0].modifiedAt").exists());
     }
 
+    @Test
+    public void createMostViewTop4ArticleDtos() throws Exception {
+        //given
+        List<Article> top4List = new ArrayList<>();
+
+        top4List.add(new Article(memberB, "articleE title", "articleE content", "titleImgUrlE"));
+        top4List.add(new Article(memberA, "articleD title", "articleD content", "titleImgUrlD"));
+        top4List.add(articleC);
+        top4List.add(articleB);
+
+        List<ArticleDto.ResponseArticleDto> articleDtos = top4List.stream()
+                .map(article -> ArticleDto.ResponseArticleDto.builder()
+                        .title(article.getTitle())
+                        .thumbnailImg(article.getTitleImg())
+                        .author(article.getMember().getName())
+                        .content(article.getContent())
+                        .commentCount(article.getCommentCount())
+                        .viewCount(article.getViewCount())
+                        .likeCount(article.getLikeCount())
+                        .modifiedAt(article.getModifiedAt())
+                        .build())
+                .toList();
+
+        //when
+        when(articleService.createTop4ByMostViewDescDtos()).thenReturn(articleDtos);
+
+        //then
+        mockMvc.perform(get("/articles/most-view/all"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data", hasSize(4)))
+                .andExpect(jsonPath("$.data[0].title").exists())
+                .andExpect(jsonPath("$.data[0].thumbnailImg").exists())
+                .andExpect(jsonPath("$.data[0].author").exists())
+                .andExpect(jsonPath("$.data[0].author").value("memberB"))
+                .andExpect(jsonPath("$.data[1].author").value("memberA"))
+                .andExpect(jsonPath("$.data[2].author").value("memberA"))
+                .andExpect(jsonPath("$.data[3].author").value("memberB"))
+                .andExpect(jsonPath("$.data[0].content").exists())
+                .andExpect(jsonPath("$.data[0].commentCount").exists())
+                .andExpect(jsonPath("$.data[0].viewCount").exists())
+                .andExpect(jsonPath("$.data[0].likeCount").exists())
+                .andExpect(jsonPath("$.data[0].modifiedAt").exists());
+    }
+
 }

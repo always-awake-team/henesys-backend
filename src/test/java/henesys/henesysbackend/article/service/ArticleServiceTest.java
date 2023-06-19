@@ -99,6 +99,22 @@ public class ArticleServiceTest {
         assertThat(findDtos.get(0).getModifiedAt()).isAfter(findDtos.get(1).getModifiedAt());
         assertThat(findDtos.get(1).getModifiedAt()).isAfter(findDtos.get(2).getModifiedAt());
     }
+
+    @Test
+    public void createTop4ByMostViewDescDtosTest() throws Exception {
+        //given
+        articleService.addArticle(articleA);
+        articleService.addArticle(articleB);
+        articleService.addArticle(articleC);
+        articleService.addArticle(new Article(memberB, "articleD title", "articleD content", "titleImgUrlD"));
+        articleService.addArticle(new Article(memberA, "articleE title", "articleE content", "titleImgUrlE"));
+
+        //when
+        List<ArticleDto.ResponseArticleDto> findDtos = articleService.createTop4ByMostViewDescDtos();
+
+        //then
+        assertThat(findDtos.size()).isEqualTo(4);
+    }
 //
 //    @Test
 //    public void deleteArticleDtosTest() throws Exception {

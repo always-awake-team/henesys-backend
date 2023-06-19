@@ -12,4 +12,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     List<Article> findTop3ByOrderByCreatedAtDesc();
 
+    List<Article> findTop4ByOrderByViewCountDescCreatedAtDesc();
+
 }
