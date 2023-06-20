@@ -2,11 +2,9 @@ package henesys.henesysbackend.article.service;
 
 import henesys.henesysbackend.article.domain.entity.Article;
 import henesys.henesysbackend.article.repository.ArticleRepository;
-import henesys.henesysbackend.comment.domain.dto.CommentDto;
 import henesys.henesysbackend.comment.domain.entity.Comment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
