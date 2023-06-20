@@ -2,11 +2,10 @@ package henesys.henesysbackend.article.service;
 
 import henesys.henesysbackend.article.domain.entity.Article;
 import henesys.henesysbackend.article.repository.ArticleRepository;
-import henesys.henesysbackend.comment.domain.dto.CommentDto;
 import henesys.henesysbackend.comment.domain.entity.Comment;
+import henesys.henesysbackend.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +21,8 @@ import static henesys.henesysbackend.comment.domain.dto.CommentDto.*;
 public class ArticleService {
 
     private final ArticleRepository articleRepository;
+
+    private final CommentService commentService;
 
     public Long addArticle(Article article) {
         Article savedArticle = articleRepository.save(article);
@@ -72,28 +73,17 @@ public class ArticleService {
         }
     }
 
-    private static ResponseArticleDetailDto createResponseArticleDetailDto(Article article) {
+    private ResponseArticleDetailDto createResponseArticleDetailDto(Article article) {
         return ResponseArticleDetailDto.builder()
                 .id(article.getId())
                 .title(article.getTitle())
-                .author(article.getMember().getName())
+                .author(article.getMember().getNickname())
                 .content(article.getContent())
                 .commentCount(article.getCommentCount())
                 .viewCount(article.getViewCount())
                 .likeCount(article.getLikeCount())
                 .modifiedAt(article.getModifiedAt())
-                .comments(article.getComments().stream()
-                        .map(ArticleService::createResponseCommentDto)
-                        .toList())
-                .build();
-    }
-
-    private static ResponseCommentDto createResponseCommentDto(Comment comment) {
-        return ResponseCommentDto.builder()
-                .id(comment.getId())
-                .author(comment.getMember().getNickname())
-                .content(comment.getContent())
-                .modifiedAt(comment.getModifiedAt())
+                .comments(commentService.createResponseCommentDtos(article.getId()))
                 .build();
     }
 }

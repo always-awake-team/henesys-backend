@@ -25,6 +25,8 @@ public class Member {
     private Long id;
     private String name;
     private String password;
+
+    @Enumerated(EnumType.STRING)
     private RoleType roleType;
     private String nickname;
     private String email;

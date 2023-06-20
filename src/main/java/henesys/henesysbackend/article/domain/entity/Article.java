@@ -2,7 +2,6 @@ package henesys.henesysbackend.article.domain.entity;
 
 import henesys.henesysbackend.comment.domain.entity.Comment;
 import henesys.henesysbackend.member.domain.entity.Member;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,10 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static javax.persistence.FetchType.*;
+import static lombok.AccessLevel.*;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 public class Article {
 
     @Id
