@@ -76,7 +76,7 @@ public class ArticleServiceTest {
         assertThat(findDtos.get(0).getId()).isEqualTo(articleA.getId());
         assertThat(findDtos.get(0).getTitle()).isEqualTo(articleA.getTitle());
         assertThat(findDtos.get(0).getContent()).isEqualTo(articleA.getContent());
-        assertThat(findDtos.get(0).getAuthor()).isEqualTo(articleA.getMember().getName());
+        assertThat(findDtos.get(0).getAuthor()).isEqualTo(articleA.getMember().getNickname());
         assertThat(findDtos.get(0).getModifiedAt()).isEqualTo(articleA.getModifiedAt());
         assertThat(findDtos.get(0).getThumbnailImg()).isEqualTo(articleA.getTitleImg());
         assertThat(findDtos.get(0).getLikeCount()).isEqualTo(articleA.getLikeCount());

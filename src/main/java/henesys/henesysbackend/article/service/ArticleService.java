@@ -46,7 +46,7 @@ public class ArticleService {
                 .id(article.getId())
                 .title(article.getTitle())
                 .thumbnailImg(article.getTitleImg())
-                .author(article.getMember().getName())
+                .author(article.getMember().getNickname())
                 .content(article.getContent())
                 .commentCount(article.getCommentCount())
                 .viewCount(article.getViewCount())
