@@ -61,18 +61,7 @@ class ArticleControllerTest {
     @Test
     public void getArticleDtos() throws Exception {
         //given
-        List<ResponseArticleDto> articleDtos = articleList.stream()
-                .map(article -> ResponseArticleDto.builder()
-                        .title(article.getTitle())
-                        .thumbnailImg(article.getTitleImg())
-                        .author(article.getMember().getName())
-                        .content(article.getContent())
-                        .commentCount(article.getCommentCount())
-                        .viewCount(article.getViewCount())
-                        .likeCount(article.getLikeCount())
-                        .modifiedAt(article.getModifiedAt())
-                        .build())
-                .toList();
+        List<ResponseArticleDto> articleDtos = createArticleDtoList(articleList);
 
         //when
         when(articleService.createArticleDtos()).thenReturn(articleDtos);
@@ -102,18 +91,7 @@ class ArticleControllerTest {
         top3List.add(new Article(memberA, "articleD title", "articleD content", "titleImgUrlD"));
         top3List.add(articleC);
 
-        List<ResponseArticleDto> articleDtos = top3List.stream()
-                .map(article -> ResponseArticleDto.builder()
-                        .title(article.getTitle())
-                        .thumbnailImg(article.getTitleImg())
-                        .author(article.getMember().getName())
-                        .content(article.getContent())
-                        .commentCount(article.getCommentCount())
-                        .viewCount(article.getViewCount())
-                        .likeCount(article.getLikeCount())
-                        .modifiedAt(article.getModifiedAt())
-                        .build())
-                .toList();
+        List<ResponseArticleDto> articleDtos = createArticleDtoList(top3List);
 
         //when
         when(articleService.createTop3ByCreatedAtDescDtos()).thenReturn(articleDtos);
@@ -144,18 +122,7 @@ class ArticleControllerTest {
         top4List.add(articleC);
         top4List.add(articleB);
 
-        List<ResponseArticleDto> articleDtos = top4List.stream()
-                .map(article -> ResponseArticleDto.builder()
-                        .title(article.getTitle())
-                        .thumbnailImg(article.getTitleImg())
-                        .author(article.getMember().getName())
-                        .content(article.getContent())
-                        .commentCount(article.getCommentCount())
-                        .viewCount(article.getViewCount())
-                        .likeCount(article.getLikeCount())
-                        .modifiedAt(article.getModifiedAt())
-                        .build())
-                .toList();
+        List<ResponseArticleDto> articleDtos = createArticleDtoList(top4List);
 
         //when
         when(articleService.createTop4ByMostViewDescDtos()).thenReturn(articleDtos);
@@ -177,6 +144,21 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.data[0].viewCount").exists())
                 .andExpect(jsonPath("$.data[0].likeCount").exists())
                 .andExpect(jsonPath("$.data[0].modifiedAt").exists());
+    }
+
+    private List<ResponseArticleDto> createArticleDtoList(List<Article> articles) {
+        return articles.stream()
+                .map(article -> ResponseArticleDto.builder()
+                        .title(article.getTitle())
+                        .thumbnailImg(article.getTitleImg())
+                        .author(article.getMember().getName())
+                        .content(article.getContent())
+                        .commentCount(article.getCommentCount())
+                        .viewCount(article.getViewCount())
+                        .likeCount(article.getLikeCount())
+                        .modifiedAt(article.getModifiedAt())
+                        .build())
+                .toList();
     }
 
     @Test
