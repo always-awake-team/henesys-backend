@@ -1,8 +1,8 @@
 package henesys.henesysbackend.article.controller;
 
-import henesys.henesysbackend.article.domain.dto.ArticleDto;
 import henesys.henesysbackend.article.domain.entity.Article;
 import henesys.henesysbackend.article.service.ArticleService;
+import henesys.henesysbackend.comment.domain.entity.Comment;
 import henesys.henesysbackend.member.domain.entity.Member;
 import henesys.henesysbackend.member.domain.enumtype.RoleType;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static henesys.henesysbackend.article.domain.dto.ArticleDto.*;
+import static henesys.henesysbackend.comment.domain.dto.CommentDto.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -35,7 +37,7 @@ class ArticleControllerTest {
     private Article articleA;
     private Article articleB;
     private Article articleC;
-
+    private Comment commentA;
     private List<Article> articleList = new ArrayList<>();
 
     @BeforeEach
@@ -50,13 +52,17 @@ class ArticleControllerTest {
         articleList.add(articleA);
         articleList.add(articleB);
         articleList.add(articleC);
+
+        commentA = new Comment(memberA, articleA, "commentA");
+        memberA.getComments().add(commentA);
+        articleA.getComments().add(commentA);
     }
 
     @Test
     public void getArticleDtos() throws Exception {
         //given
-        List<ArticleDto.ResponseArticleDto> articleDtos = articleList.stream()
-                .map(article -> ArticleDto.ResponseArticleDto.builder()
+        List<ResponseArticleDto> articleDtos = articleList.stream()
+                .map(article -> ResponseArticleDto.builder()
                         .title(article.getTitle())
                         .thumbnailImg(article.getTitleImg())
                         .author(article.getMember().getName())
@@ -96,8 +102,8 @@ class ArticleControllerTest {
         top3List.add(new Article(memberA, "articleD title", "articleD content", "titleImgUrlD"));
         top3List.add(articleC);
 
-        List<ArticleDto.ResponseArticleDto> articleDtos = top3List.stream()
-                .map(article -> ArticleDto.ResponseArticleDto.builder()
+        List<ResponseArticleDto> articleDtos = top3List.stream()
+                .map(article -> ResponseArticleDto.builder()
                         .title(article.getTitle())
                         .thumbnailImg(article.getTitleImg())
                         .author(article.getMember().getName())
@@ -138,8 +144,8 @@ class ArticleControllerTest {
         top4List.add(articleC);
         top4List.add(articleB);
 
-        List<ArticleDto.ResponseArticleDto> articleDtos = top4List.stream()
-                .map(article -> ArticleDto.ResponseArticleDto.builder()
+        List<ResponseArticleDto> articleDtos = top4List.stream()
+                .map(article -> ResponseArticleDto.builder()
                         .title(article.getTitle())
                         .thumbnailImg(article.getTitleImg())
                         .author(article.getMember().getName())
@@ -171,6 +177,56 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.data[0].viewCount").exists())
                 .andExpect(jsonPath("$.data[0].likeCount").exists())
                 .andExpect(jsonPath("$.data[0].modifiedAt").exists());
+    }
+
+    @Test
+    public void getArticleById() throws Exception {
+        //given
+        Long commentAId = 1L;
+        Long articleAId = 2L;
+
+        ResponseCommentDto commentDto = ResponseCommentDto.builder()
+                .id(commentAId)
+                .author(commentA.getMember().getNickname())
+                .content(commentA.getContent())
+                .modifiedAt(commentA.getModifiedAt())
+                .build();
+
+        List<ResponseCommentDto> comments = new ArrayList<>();
+        comments.add(commentDto);
+
+        ResponseArticleDetailDto findArticle = ResponseArticleDetailDto.builder()
+                .id(articleAId)
+                .title(articleA.getTitle())
+                .author(articleA.getMember().getName())
+                .content(articleA.getContent())
+                .commentCount(articleA.getCommentCount())
+                .viewCount(articleA.getViewCount())
+                .likeCount(articleA.getLikeCount())
+                .modifiedAt(articleA.getModifiedAt())
+                .comments(comments)
+                .build();
+
+        //when
+        when(articleService.createOneArticleDto(articleAId)).thenReturn(findArticle);
+
+        //then
+        mockMvc.perform(get("/articles/" + articleAId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.data.id").exists())
+                .andExpect(jsonPath("$.data.title").exists())
+                .andExpect(jsonPath("$.data.content").exists())
+                .andExpect(jsonPath("$.data.commentCount").exists())
+                .andExpect(jsonPath("$.data.viewCount").exists())
+                .andExpect(jsonPath("$.data.likeCount").exists())
+                .andExpect(jsonPath("$.data.modifiedAt").exists())
+                .andExpect(jsonPath("$.data.comments", hasSize(1)))
+                .andExpect(jsonPath("$.data.comments[0].id").exists())
+                .andExpect(jsonPath("$.data.comments[0].author").exists())
+                .andExpect(jsonPath("$.data.comments[0].content").exists())
+                .andExpect(jsonPath("$.data.comments[0].modifiedAt").exists());
+
     }
 
 }
