@@ -113,7 +113,7 @@ class ArticleControllerTest {
         when(articleService.createTop3ByCreatedAtDescDtos()).thenReturn(articleDtos);
 
         //then
-        mockMvc.perform(get("/articles/new"))
+        mockMvc.perform(get("/articles/latest"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data", hasSize(3)))
@@ -155,7 +155,7 @@ class ArticleControllerTest {
         when(articleService.createTop4ByMostViewDescDtos()).thenReturn(articleDtos);
 
         //then
-        mockMvc.perform(get("/articles/most-view/all"))
+        mockMvc.perform(get("/articles/most-view"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.data", hasSize(4)))

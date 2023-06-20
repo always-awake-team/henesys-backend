@@ -20,13 +20,13 @@ public class ArticleController {
         return new ResponseResult<>(articleDtos);
     }
 
-    @GetMapping("/articles/new")
+    @GetMapping("/articles/latest")
     public ResponseResult<List<ArticleDto.ResponseArticleDto>> getTop3NewCreatedArticles() {
         List<ArticleDto.ResponseArticleDto> articleDtos = articleService.createTop3ByCreatedAtDescDtos();
         return new ResponseResult<>(articleDtos);
     }
 
-    @GetMapping("/articles/most-view/all")
+    @GetMapping("/articles/most-view")
     public ResponseResult<List<ArticleDto.ResponseArticleDto>> getTop4MostViewArticles() {
         List<ArticleDto.ResponseArticleDto> articleDtos = articleService.createTop4ByMostViewDescDtos();
         return new ResponseResult<>(articleDtos);
