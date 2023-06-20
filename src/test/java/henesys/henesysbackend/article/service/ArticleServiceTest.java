@@ -1,17 +1,14 @@
 package henesys.henesysbackend.article.service;
 
-import henesys.henesysbackend.article.domain.dto.ArticleDto;
 import henesys.henesysbackend.article.domain.entity.Article;
 import henesys.henesysbackend.comment.domain.entity.Comment;
 import henesys.henesysbackend.member.domain.entity.Member;
 import henesys.henesysbackend.member.domain.enumtype.RoleType;
 import henesys.henesysbackend.member.repository.MemberRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -19,7 +16,6 @@ import java.util.List;
 import static henesys.henesysbackend.article.domain.dto.ArticleDto.*;
 import static org.assertj.core.api.Assertions.*;
 
-@Slf4j
 @SpringBootTest
 @Transactional
 public class ArticleServiceTest {
@@ -47,6 +43,9 @@ public class ArticleServiceTest {
         articleA = new Article(memberA, "articleA title", "articleA content", "titleImgUrlA");
         articleB = new Article(memberB, "articleB title", "articleB content", "titleImgUrlB");
         articleC = new Article(memberA, "articleC title", "articleC content", "titleImgUrlC");
+        articleService.addArticle(articleA);
+        articleService.addArticle(articleB);
+        articleService.addArticle(articleC);
     }
 
     @Test
@@ -60,38 +59,28 @@ public class ArticleServiceTest {
         //then
         assertThat(addId).isEqualTo(targetArticle.getId());
         assertThat(targetArticle.getMember().getArticles().get(0)).isEqualTo(targetArticle);
-        log.info("targetArticleId={}", targetArticle.getId());
-        log.info("addId={}", addId);
     }
 
     @Test
     public void createArticleDtosTest() throws Exception {
-        //given
-        articleService.addArticle(articleA);
-        articleService.addArticle(articleB);
-        articleService.addArticle(articleC);
-
         //when
         List<ResponseArticleDto> findDtos = articleService.createArticleDtos();
-
+        ResponseArticleDto findDto = findDtos.get(0);
         //then
         assertThat(findDtos.size()).isEqualTo(3);
-        assertThat(findDtos.get(0).getId()).isEqualTo(articleA.getId());
-        assertThat(findDtos.get(0).getTitle()).isEqualTo(articleA.getTitle());
-        assertThat(findDtos.get(0).getContent()).isEqualTo(articleA.getContent());
-        assertThat(findDtos.get(0).getAuthor()).isEqualTo(articleA.getMember().getNickname());
-        assertThat(findDtos.get(0).getModifiedAt()).isEqualTo(articleA.getModifiedAt());
-        assertThat(findDtos.get(0).getThumbnailImg()).isEqualTo(articleA.getTitleImg());
-        assertThat(findDtos.get(0).getLikeCount()).isEqualTo(articleA.getLikeCount());
-        assertThat(findDtos.get(0).getViewCount()).isEqualTo(articleA.getViewCount());
+        assertThat(findDto.getId()).isEqualTo(articleA.getId());
+        assertThat(findDto.getTitle()).isEqualTo(articleA.getTitle());
+        assertThat(findDto.getContent()).isEqualTo(articleA.getContent());
+        assertThat(findDto.getAuthor()).isEqualTo(articleA.getMember().getNickname());
+        assertThat(findDto.getModifiedAt()).isEqualTo(articleA.getModifiedAt());
+        assertThat(findDto.getThumbnailImg()).isEqualTo(articleA.getTitleImg());
+        assertThat(findDto.getLikeCount()).isEqualTo(articleA.getLikeCount());
+        assertThat(findDto.getViewCount()).isEqualTo(articleA.getViewCount());
     }
 
     @Test
     public void createTop3ByCreatedAtDescDtosTest() throws Exception {
         //given
-        articleService.addArticle(articleA);
-        articleService.addArticle(articleB);
-        articleService.addArticle(articleC);
         articleService.addArticle(new Article(memberB, "articleD title", "articleD content", "titleImgUrlD"));
         articleService.addArticle(new Article(memberA, "articleE title", "articleE content", "titleImgUrlE"));
 
@@ -107,9 +96,6 @@ public class ArticleServiceTest {
     @Test
     public void createTop4ByMostViewDescDtosTest() throws Exception {
         //given
-        articleService.addArticle(articleA);
-        articleService.addArticle(articleB);
-        articleService.addArticle(articleC);
         articleService.addArticle(new Article(memberB, "articleD title", "articleD content", "titleImgUrlD"));
         articleService.addArticle(new Article(memberA, "articleE title", "articleE content", "titleImgUrlE"));
 
@@ -119,12 +105,10 @@ public class ArticleServiceTest {
         //then
         assertThat(findDtos.size()).isEqualTo(4);
     }
-    
+
     @Test
     public void createOneArticleDtoTest() throws Exception {
         //given
-        articleService.addArticle(articleA);
-        articleService.addArticle(articleB);
         Comment commentA = new Comment(memberB, articleA, "contentA");
         Comment commentB = new Comment(memberA, articleA, "contentB");
         articleA.getComments().add(commentA);
@@ -133,7 +117,7 @@ public class ArticleServiceTest {
 
         //when
         ResponseArticleDetailDto findDto = articleService.createOneArticleDto(ArticleId);
-        
+
         //then
         assertThat(findDto.getId()).isEqualTo(articleA.getId());
         assertThat(findDto.getComments().size()).isEqualTo(2);
@@ -142,33 +126,10 @@ public class ArticleServiceTest {
     @Test
     public void createOneArticleDtoFailTest() throws Exception {
         //given
-        articleService.addArticle(articleA);
-        Long ArticleId = articleB.getId();
+        Long ArticleId = 23946856L;
 
         //when, then
         assertThatThrownBy(() -> articleService.createOneArticleDto(ArticleId))
                 .isInstanceOf(RuntimeException.class);
     }
-    
-//
-//    @Test
-//    public void deleteArticleDtosTest() throws Exception {
-//        //given
-//        Long articleAId = articleService.addArticle(articleA);
-//        Long articleBId = articleService.addArticle(articleB);
-//        Long articleCId = articleService.addArticle(articleC);
-//
-//        //when
-//        List<ArticleDto> findDtos = articleService.deleteArticleDtos();
-//
-//        //then
-//        assertThat(findDtos.size()).isEqualTo(3);
-//        assertThat(findDtos.get(0).getTitle()).isEqualTo(articleA.getTitle());
-//        assertThat(findDtos.get(0).getContent()).isEqualTo(articleA.getContent());
-//        assertThat(findDtos.get(0).getAuthor()).isEqualTo(articleA.getMember().getName());
-//        assertThat(findDtos.get(0).getModifiedAt()).isEqualTo(articleA.getModifiedAt());
-//        assertThat(findDtos.get(0).getThumbnailImg()).isEqualTo(articleA.getTitleImg());
-//        assertThat(findDtos.get(0).getLikeCount()).isEqualTo(articleA.getLikeCount());
-//        assertThat(findDtos.get(0).getViewCount()).isEqualTo(articleA.getViewCount());
-//    }
 }
