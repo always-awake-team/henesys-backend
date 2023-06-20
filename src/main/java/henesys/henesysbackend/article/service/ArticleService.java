@@ -43,6 +43,7 @@ public class ArticleService {
 
     private static ArticleDto.ResponseArticleDto createArticleDto(Article article) {
         return ArticleDto.ResponseArticleDto.builder()
+                .id(article.getId())
                 .title(article.getTitle())
                 .thumbnailImg(article.getTitleImg())
                 .author(article.getMember().getName())
