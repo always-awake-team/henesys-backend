@@ -15,7 +15,6 @@ public class CommentDto {
     public static class ResponseCommentDto {
 
         private Long id;
-        private Long authorId;
         private String author;
         private String content;
         private LocalDateTime modifiedAt;
