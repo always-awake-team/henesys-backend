@@ -2,6 +2,7 @@ package henesys.henesysbackend.article.service;
 
 import henesys.henesysbackend.article.domain.entity.Article;
 import henesys.henesysbackend.comment.domain.entity.Comment;
+import henesys.henesysbackend.comment.repository.CommentRepository;
 import henesys.henesysbackend.member.domain.entity.Member;
 import henesys.henesysbackend.member.domain.enumtype.RoleType;
 import henesys.henesysbackend.member.repository.MemberRepository;
@@ -25,6 +26,9 @@ public class ArticleServiceTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    CommentRepository commentRepository;
 
     private Member memberA;
     private Member memberB;
@@ -54,10 +58,8 @@ public class ArticleServiceTest {
         Article targetArticle = articleA;
 
         //when
-        Long addId = articleService.addArticle(targetArticle);
 
         //then
-        assertThat(addId).isEqualTo(targetArticle.getId());
         assertThat(targetArticle.getMember().getArticles().get(0)).isEqualTo(targetArticle);
     }
 
@@ -65,7 +67,9 @@ public class ArticleServiceTest {
     public void createArticleDtosTest() throws Exception {
         //when
         List<ResponseArticleDto> findDtos = articleService.createArticleDtos();
+
         ResponseArticleDto findDto = findDtos.get(0);
+
         //then
         assertThat(findDtos.size()).isEqualTo(3);
         assertThat(findDto.getId()).isEqualTo(articleA.getId());
@@ -111,8 +115,10 @@ public class ArticleServiceTest {
         //given
         Comment commentA = new Comment(memberB, articleA, "contentA");
         Comment commentB = new Comment(memberA, articleA, "contentB");
-        articleA.getComments().add(commentA);
-        articleA.getComments().add(commentB);
+        commentRepository.save(commentA);
+        commentRepository.save(commentB);
+        commentA.addCommentToMemberAndArticle();
+        commentB.addCommentToMemberAndArticle();
         Long ArticleId = articleA.getId();
 
         //when

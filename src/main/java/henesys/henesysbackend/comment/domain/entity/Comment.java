@@ -39,4 +39,9 @@ public class Comment {
         this.createdAt = LocalDateTime.now();
         this.modifiedAt = this.createdAt;
     }
+
+    public void addCommentToMemberAndArticle() {
+        this.article.getComments().add(this);
+        this.member.getComments().add(this);
+    }
 }
