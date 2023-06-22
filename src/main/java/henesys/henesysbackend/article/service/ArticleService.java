@@ -64,13 +64,8 @@ public class ArticleService {
     }
 
     public ResponseArticleDetailDto createOneArticleDto(Long articleId) {
-        try {
-            Article article = articleRepository.findById(articleId).get();
-            return createResponseArticleDetailDto(article);
-        } catch (RuntimeException e) {
-            log.info("해당 게시물은 없는 게시물입니다. message={}", e.getMessage());
-            throw new IllegalArgumentException();
-        }
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new IllegalArgumentException("해당 게시물은 없는 게시물입니다."));
+        return createResponseArticleDetailDto(article);
     }
 
     private ResponseArticleDetailDto createResponseArticleDetailDto(Article article) {
